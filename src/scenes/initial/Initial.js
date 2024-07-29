@@ -37,8 +37,6 @@ export default function Initial() {
           setUserData(userData)
           readTransactions(userData, setTransactions, setCategories)
           console.log('userData:', userData)
-          // setTransactions(userData.transactions)
-          // setCategories(userData.categories)
           setLoggedIn(true)
           setChecked(true)
         })

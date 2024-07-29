@@ -3,6 +3,7 @@ import { Platform } from "react-native";
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack'
 import TabNavigator from "../tabs/Tabs";
 import { ModalStacks } from "../stacks/ModalStacks/ModalStacks";
+import { ModalStacks2 } from "../stacks/ModalStacks/ModalStacks2";
 import * as Notifications from 'expo-notifications'
 import { firestore } from "../../../firebase/config";
 import { setDoc, doc } from 'firebase/firestore';
@@ -79,6 +80,10 @@ export default function RootStack() {
         <Stack.Screen
           name='ModalStacks'
           component={ModalStacks}
+        />
+        <Stack.Screen
+          name='ModalStacks2'
+          component={ModalStacks2}
         />
       </Stack.Group>
     </Stack.Navigator>

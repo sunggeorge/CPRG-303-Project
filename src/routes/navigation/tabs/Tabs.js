@@ -4,7 +4,7 @@ import FontIcon from 'react-native-vector-icons/FontAwesome'
 import { colors } from 'theme'
 
 // stack navigators
-import { HomeNavigator, ProfileNavigator, ConnectNavigator, HistoryNavigator } from '../stacks'
+import { HomeNavigator, ProfileNavigator, ConnectNavigator, HistoryNavigator, ManageCategoryNavigator } from '../stacks'
 
 const Tab = createBottomTabNavigator()
 
@@ -62,12 +62,12 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="ConnectTab"
-        component={ConnectNavigator}
+        component={ManageCategoryNavigator}
         options={{
-          tabBarLabel: 'Connect',
+          tabBarLabel: 'Category',
           tabBarIcon: ({ color, size }) => (
             <FontIcon
-              name="share-alt"
+              name="gear"
               color={color}
               size={size}
             />

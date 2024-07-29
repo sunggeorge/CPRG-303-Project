@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
+import { UserDataContext } from '../../context/UserDataContext'
 import { Text, View, StyleSheet, TextInput, TouchableOpacity  } from 'react-native'
 import {Picker} from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -10,15 +11,17 @@ import { ColorSchemeContext } from '../../context/ColorSchemeContext'
 import { HomeTitleContext } from '../../context/HomeTitleContext'
 import {useAtom} from 'jotai'
 import { categoriesAtom } from '../../utils/atom';
+import { createTransaction } from '../../utils/transactions'
 // import { storage } from '../../utils/Storage'
 // import moment from 'moment'
 
-export default function Post() {
+export default function AddCategory() {
   const route = useRoute()
-  const { data, from } = route.params
+  // const { data, from } = route.params
   const { scheme } = useContext(ColorSchemeContext)
   // const [date, setDate] = useState('')
   const { setTitle } = useContext(HomeTitleContext)
+  const { userData } = useContext(UserDataContext)
   const navigation = useNavigation()
   const [categories] = useAtom(categoriesAtom)
   const isDark = scheme === 'dark'
@@ -37,7 +40,7 @@ export default function Post() {
     setTitle('Add Transaction')
   });
 
-  const [categoryID, setCategoryID] = useState(Object.keys(categories)[0]);
+  const [categoryID, setCategoryID] = useState(categories[0].id);
   const [date, setDate] = useState(new Date());
   const [type, setType] = useState('expenses');
   const [amount, setAmount] = useState(0);
@@ -51,18 +54,28 @@ export default function Post() {
   };
 
   const handleSubmit = async () => {
-    if (user && amount > 0) {
+    if (userData && amount > 0) {
       const transaction = {
-        categoryID,
-        date,
-        amount: parseFloat(amount),
-        type,
-        note
+        categoryID: categoryID,
+        date: date,
+        amount: type == 'expenses'? -1 * parseFloat(amount): parseFloat(amount),
+        note: note
       };
-      await createTransaction(user, transaction);
+      await createTransaction(userData, transaction);
       navigation.goBack();
     }
   };
+
+  // const testFunction = async () => {
+    // let tempTransaction = {
+    //   categoryID: 'jJPPS0unA7WR3H6s7DAG', //transportation
+    //   date: new Date(),
+    //   amount: 100,
+    //   note: 'test'
+    // }
+    // createTransaction(userData, tempTransaction)
+
+  // };
 
   console.log('categories:', categories)
   console.log('categoryID:', categoryID)
@@ -79,8 +92,8 @@ export default function Post() {
             style={styles.picker}
             onValueChange={(itemValue) => setCategoryID(itemValue)}
           >
-            {Object.keys(categories).map((key) => (
-              <Picker.Item key={key} label={categories[key]} value={key} />
+            {categories.map((category) => (
+              <Picker.Item key={category.id} label={category.name} value={category.id} />
             ))}
           </Picker>
         </View>

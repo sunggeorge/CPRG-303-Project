@@ -2,12 +2,12 @@ import React, { useState, useContext } from "react";
 import { createStackNavigator } from '@react-navigation/stack'
 import { HomeTitleContext } from "../../../../context/HomeTitleContext";
 
-import AddTransaction from "../../../../scenes/addTransaction";
+import AddCategory from "../../../../scenes/addCategory";
 import Print from "../../../../scenes/print";
 
 const Stack = createStackNavigator()
 
-export const ModalStacks = () => {
+export const ModalStacks2 = () => {
   const [title, setTitle] = useState('default title')
 
   return (
@@ -25,8 +25,8 @@ export const ModalStacks = () => {
             }}
           >
             <Stack.Screen
-              name='Add Transaction'
-              component={AddTransaction}
+              name='Add Category'
+              component={AddCategory}
               options={{
                 title: ctx.title,
                 headerBackTitle: '',

@@ -1,9 +1,8 @@
 // import { getFirestore } from 'firebase/firestore';
 // cloud storage
 // import { getStorage } from "firebase/storage";
-
-
-
+// import { useContext } from 'react'
+// import { UserDataContext } from '../context/UserDataContext'
 import { initializeApp } from 'firebase/app';
 import { getFirestore, arrayUnion, collection, doc, addDoc, getDocs, onSnapshot, updateDoc, deleteDoc } from 'firebase/firestore';
 import { firebaseKey } from '../config'
@@ -26,16 +25,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 
+
 const createTransaction = async (user, transaction) => {
   if (user) {
-    const usersRef = doc(firestore, 'users', user.uid);
+    const usersRef = doc(firestore, 'users', user.id);
     const transactionsRef = collection(usersRef, 'transactions');
 
     // Add the transaction and get its ID
     const docRef = await addDoc(transactionsRef, transaction);
 
     // Update the corresponding category's transactionID array
-    const categoryRef = doc(firestore, `users/${user.uid}/categories/${transaction.categoryID}`);
+    const categoryRef = doc(firestore, `users/${user.id}/categories/${transaction.categoryID}`);
     await updateDoc(categoryRef, {
       transactionID: arrayUnion(docRef.id)
     });
@@ -43,6 +43,7 @@ const createTransaction = async (user, transaction) => {
 };
 
 const readTransactions = (user, setTransactions, setCategories ) => {
+  // const { userData } = useContext(UserDataContext)
   if (user) {
     // console.log('user:', user)
     const usersRef = doc(firestore, 'users', user.id);
@@ -51,9 +52,13 @@ const readTransactions = (user, setTransactions, setCategories ) => {
     // console.log('transactionsRef:', transactionsRef)
     // Fetch categories first
     getDocs(categoriesRef).then((categorySnapshot) => {
-      const categories = {};
+      const categories = [];
       categorySnapshot.forEach((doc) => {
-        categories[doc.id] = doc.data().name;
+        let transactionID = doc.data().transactionID;
+        categories.push({
+          ...doc.data(),
+           id: doc.id,
+           transactions: Array.isArray(transactionID) ? transactionID.length : 0 });
       });
 
       // Fetch transactions and add categoryName field

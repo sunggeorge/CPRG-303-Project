@@ -10,13 +10,11 @@ import { colors, fontSize } from '../../theme'
 import { UserDataContext } from '../../context/UserDataContext'
 import { ColorSchemeContext } from '../../context/ColorSchemeContext'
 import { sendNotification } from '../../utils/SendNotification'
-import { getKilobyteSize } from '../../utils/functions'
 import { useAtom } from 'jotai'
-import { transactionsAtom } from '../../utils/atom'
+import { categoriesAtom } from '../../utils/atom'
 
 
-export default function History() {
-  const [transactions] = useAtom(transactionsAtom)
+export default function ManageCategory() {
   const navigation = useNavigation()
   const [token, setToken] = useState('')
   const { userData } = useContext(UserDataContext)
@@ -26,26 +24,33 @@ export default function History() {
     content: isDark? styles.darkContent : styles.lightContent,
     text: isDark? colors.white : colors.primaryText
   }
+  const [categories] = useAtom(categoriesAtom)
 
 
 
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => (
-  //       <IconButton
-  //         icon="align-right"
-  //         color={colors.lightPurple}
-  //         size={24}
-  //         onPress={() => headerButtonPress()}
-  //         containerStyle={{paddingRight: 15}}
-  //       />
-  //     ),
-  //   });
-  // }, [navigation]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <IconButton
+          icon="plus"
+          color={colors.lightPurple}
+          size={24}
+          onPress={() => headerButtonPress()}
+          containerStyle={{paddingRight: 15}}
+        />
+      ),
+    });
+  }, [navigation]);
 
-  // const headerButtonPress = () => {
-  //   alert('Tapped header button')
-  // }
+  const headerButtonPress = () => {
+    navigation.navigate('ModalStacks2', {
+      screen: 'addCategory',
+      params: {
+        data: userData,
+        from: 'Manage Category screen'
+      }
+    })
+  }
 
   useEffect(() => {
     const tokensRef = doc(firestore, 'tokens', userData.id);
@@ -72,18 +77,54 @@ export default function History() {
 
   return (
     <ScreenTemplate>
-      <ScrollView style={styles.main}>
-      {transactions.map((transaction) => (
-        <View key={transaction.id} style={styles.transactionItem}>
-          <Text>Date: {new Date(transaction.date.seconds * 1000).toLocaleDateString()}</Text>
-          <Text>Amount: {transaction.amount}</Text>
-          <Text>Category: {transaction.categoryName}</Text>
-          <Text>Note: {transaction.note}</Text>
-        </View>
-      ))}
+    <ScrollView style={styles.main}>
+    {categories.map((category) => (
+      <View key={category.id} style={styles.transactionItem}>
+        <Text>Name: {category.name}</Text>
+        <Text>Transactions: {category.transactions}</Text>
+      </View>
+    ))}
 
-      </ScrollView>
-    </ScreenTemplate>
+    </ScrollView>
+  </ScreenTemplate>
+    // <ScreenTemplate>
+    //   <ScrollView style={styles.main}>
+    //     <View style={colorScheme.content}>
+    //       <Text style={[styles.field, { color: colorScheme.text }]}>Mail:</Text>
+    //       <Text style={[styles.title, { color: colorScheme.text }]}>{userData.email}</Text>
+    //       {token ?
+    //         <>
+    //           <Text style={[styles.field, { color: colorScheme.text }]}>Expo push token:</Text>
+    //           <Text style={[styles.title, { color: colorScheme.text }]}>{token.token}</Text>
+    //         </> : null
+    //       }
+    //     </View>
+    //     <Button
+    //       label='Go to Detail'
+    //       color={colors.primary}
+    //       onPress={() => navigation.navigate('Detail', { userData: userData, from: 'Home', title: userData.email })}
+    //     />
+    //     <Button
+    //       label='Open Modal'
+    //       color={colors.tertiary}
+    //       onPress={() => {
+    //         navigation.navigate('ModalStacks', {
+    //           screen: 'Post',
+    //           params: {
+    //             data: userData,
+    //             from: 'Home screen'
+    //           }
+    //         })
+    //       }}
+    //     />
+    //     <Button
+    //       label='Send Notification'
+    //       color={colors.pink}
+    //       onPress={() => onNotificationPress()}
+    //       disable={!token}
+    //     />
+    //   </ScrollView>
+    // </ScreenTemplate>
   )
 }
 

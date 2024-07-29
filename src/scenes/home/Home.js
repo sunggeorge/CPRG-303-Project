@@ -44,7 +44,8 @@ export default function Home() {
 
   const headerButtonPress = () => {
     navigation.navigate('ModalStacks', {
-      screen: 'Post',
+      screen: 'addTransaction',
+      // screen: 'Post',
       params: {
         data: userData,
         from: 'Home screen'
@@ -80,7 +81,7 @@ export default function Home() {
     <ScrollView style={styles.main}>
     {transactions.map((transaction) => (
       <View key={transaction.id} style={styles.transactionItem}>
-        <Text>Date: {new Date(transaction.date.seconds * 1000).toLocaleString()}</Text>
+        <Text>Date: {new Date(transaction.date.seconds * 1000).toLocaleDateString()}</Text>
         <Text>Amount: {transaction.amount}</Text>
         <Text>Category: {transaction.categoryName}</Text>
         <Text>Note: {transaction.note}</Text>
@@ -160,4 +161,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.middle,
     textAlign: 'center',
   },
+  transactionItem: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: colors.lightPurple,
+    borderRadius: 5,
+    marginBottom: 10,
+  }
 })
