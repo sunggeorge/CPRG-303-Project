@@ -1,18 +1,5 @@
-# React Native Expo with Firebase V2
+# F5 Expenses Tracker
 
-<a href="https://www.buymeacoffee.com/votepurchase" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
-
-## Screens
-
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img1.jpg' width='80%'>
-
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img6.jpg' width='80%'>
-
-## Demo
-
-Try with Expo Go on your device. SDK 51.
-
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img15.png' width='40%'>
 
 ## Requirements
 
@@ -70,9 +57,6 @@ Try with Expo Go on your device. SDK 51.
 
 ## How to use
 
-**Video guide(Japanese)**
-
-[![How to start video](https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img10.png)](https://youtu.be/oQqvuh8kKCQ)
 
 ### 1. Install
 
@@ -102,7 +86,7 @@ yarn install
 - Click on the second tab where it said "Sign-In method"
 - Enable all the Sign-in method you would like to enable. For now, we will enable the "Email/Password" option.
 
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img3.png' width='80%'>
+
 
 **Step 3: Configure Firebase Console Firestore**
 
@@ -111,7 +95,7 @@ yarn install
 - Select the "Cloud Firestore location", click "Enable"
 - Create the "users" and "tokens" collections. An empty document is fine.
 
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img4.png' width='80%'>
+
 
 ***Security Rules***
 
@@ -129,13 +113,6 @@ service cloud.firestore {
 }
 ```
 
-**Step 4: Create a folder in Cloud Storage**
-
-- Next. Click Storage on the left.
-- Create an empty "avatar" folder.
-- Upload the image file "icon.png" of your choice. This is the default icon for app users.
-
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img5.png' width='80%'>
 
 ***Security Rules***
 
@@ -156,7 +133,6 @@ service firebase.storage {
 - Then give it a name, click "Register app".
 - It will show you the Firebase configuration, copy the SDK keys, we will use it in the next step.
 
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img2.png' width='80%'>
 
 **Step 6: Connect Firebase**
 
@@ -271,7 +247,6 @@ const removeStorage = async() => {
 
 - ### Toast & Notification
 
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img7.jpg' width='80%'>
 
 ```javascript
 // Toast
@@ -301,7 +276,6 @@ const onNotificationPress = async() => {
 
 - ### Snackbar
 
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img9.png' width='80%'>
 
 ```javascript
 import React, { useState } from 'react'
@@ -354,7 +328,6 @@ const styles = StyleSheet.create({
 
 - ### Data fetch, Loading, Error
 
-<img src='https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/__DELELE_ME__/img8.jpg' width='80%'>
 
 ```javascript
 export default function Print() {
