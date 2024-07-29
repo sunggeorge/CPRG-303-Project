@@ -37,7 +37,7 @@ export default function AddTransaction() {
 
   useFocusEffect(() => {
     // setTitle(data.fullName)
-    setTitle('Add Category')
+    setTitle('Add Transaction')
   });
 
   const [categoryID, setCategoryID] = useState(categories[0].id);
