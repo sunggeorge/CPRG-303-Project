@@ -97,11 +97,6 @@ export default function Profile() {
           color={colors.primary}
           onPress={goDetail}
         />
-        <Button
-          label='Delete account'
-          color={colors.secondary}
-          onPress={showDialog}
-        />
         <View style={styles.footerView}>
           <Text onPress={onSignOutPress} style={styles.footerLink}>Sign out</Text>
         </View>
