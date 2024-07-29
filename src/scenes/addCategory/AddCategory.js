@@ -10,13 +10,17 @@ import { colors, fontSize } from 'theme'
 import { ColorSchemeContext } from '../../context/ColorSchemeContext'
 import { HomeTitleContext } from '../../context/HomeTitleContext'
 import {useAtom} from 'jotai'
-import { categoriesAtom } from '../../utils/atom';
+import { categoriesAtom, transactionsAtom } from '../../utils/atom';
 import { createTransaction } from '../../utils/transactions'
+import { firestore } from '../../firebase/config';
+import { readTransactions, createCategory, updateCategory, deleteCategory } from '../../utils/transactions';
 // import { storage } from '../../utils/Storage'
 // import moment from 'moment'
 
 export default function AddCategory() {
   const route = useRoute()
+  const [, setCategories] = useAtom(categoriesAtom)
+  const [, setTransactions] = useAtom(transactionsAtom)
   // const { data, from } = route.params
   const { scheme } = useContext(ColorSchemeContext)
   // const [date, setDate] = useState('')
@@ -54,28 +58,32 @@ export default function AddCategory() {
   };
 
   const handleSubmit = async () => {
-    if (userData && amount > 0) {
-      const transaction = {
-        categoryID: categoryID,
-        date: date,
-        amount: type == 'expenses'? -1 * parseFloat(amount): parseFloat(amount),
-        note: note
-      };
-      await createTransaction(userData, transaction);
-      navigation.goBack();
-    }
+    // if (userData && amount > 0) {
+    //   const transaction = {
+    //     categoryID: categoryID,
+    //     date: date,
+    //     amount: type == 'expenses'? -1 * parseFloat(amount): parseFloat(amount),
+    //     note: note
+    //   };
+    //   await createTransaction(userData, transaction);
+    //   navigation.goBack();
+    // }
+    await testFunctions()
   };
 
-  // const testFunction = async () => {
-    // let tempTransaction = {
-    //   categoryID: 'jJPPS0unA7WR3H6s7DAG', //transportation
-    //   date: new Date(),
-    //   amount: 100,
-    //   note: 'test'
+  const testFunctions = async () => {
+    // let tempCategory = {
+    //   name: 'test',
+    //   transactionID: []
     // }
-    // createTransaction(userData, tempTransaction)
+    // console.log('userData(new):', userData)
+    // createCategory(userData, tempCategory, setTransactions, setCategories)
 
-  // };
+    // await deleteCategory(userData, 'JXSULBdIAKWYaJAfJYmA', setTransactions, setCategories)
+    // await updateCategory(userData, 'JXSULBdIAKWYaJAfJYmA', 'newTest9', setTransactions, setCategories)
+
+  }
+
 
   console.log('categories:', categories)
   console.log('categoryID:', categoryID)

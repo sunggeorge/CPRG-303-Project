@@ -90,25 +90,12 @@ export default function Profile() {
         </View>
         <Text style={[styles.field, { color: colorScheme.text }]}>Name:</Text>
         <Text style={[styles.title, { color: colorScheme.text }]}>{userData.fullName}</Text>
-        <Text style={[styles.field, { color: colorScheme.text }]}>Mail:</Text>
+        <Text style={[styles.field, { color: colorScheme.text }]}>Email:</Text>
         <Text style={[styles.title, { color: colorScheme.text }]}>{userData.email}</Text>
         <Button
           label='Edit'
           color={colors.primary}
           onPress={goDetail}
-        />
-        <Button
-          label='Open Modal'
-          color={colors.tertiary}
-          onPress={() => {
-            navigation.navigate('ModalStacks', {
-              screen: 'Post',
-              params: {
-                data: userData,
-                from: 'Profile screen'
-              }
-            })
-          }}
         />
         <Button
           label='Delete account'
