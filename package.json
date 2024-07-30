@@ -24,6 +24,7 @@
     "@rneui/themed": "^4.0.0-rc.7",
     "axios": "^0.27.2",
     "base-64": "^1.0.0",
+    "date-fns": "^3.6.0",
     "expo": "~51.0.14",
     "expo-asset": "~10.0.9",
     "expo-device": "~6.0.2",
