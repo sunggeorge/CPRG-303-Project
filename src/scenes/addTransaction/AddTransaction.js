@@ -10,7 +10,7 @@ import { colors, fontSize } from 'theme'
 import { ColorSchemeContext } from '../../context/ColorSchemeContext'
 import { HomeTitleContext } from '../../context/HomeTitleContext'
 import {useAtom} from 'jotai'
-import { categoriesAtom } from '../../utils/atom';
+import { categoriesAtom, transactionsAtom } from '../../utils/atom';
 import { createTransaction } from '../../utils/transactions'
 // import { storage } from '../../utils/Storage'
 // import moment from 'moment'
@@ -23,7 +23,8 @@ export default function AddTransaction() {
   const { setTitle } = useContext(HomeTitleContext)
   const { userData } = useContext(UserDataContext)
   const navigation = useNavigation()
-  const [categories] = useAtom(categoriesAtom)
+  const [categories, setCategories] = useAtom(categoriesAtom)
+  const [, setTransactions] = useAtom(transactionsAtom)
   const isDark = scheme === 'dark'
   const colorScheme = {
     content: isDark? styles.darkContent:styles.lightContent,
@@ -61,7 +62,7 @@ export default function AddTransaction() {
         amount: type == 'expenses'? -1 * parseFloat(amount): parseFloat(amount),
         note: note
       };
-      await createTransaction(userData, transaction);
+      await createTransaction(userData, transaction, setTransactions, setCategories);
       navigation.goBack();
     }
   };

@@ -70,10 +70,14 @@ export default function History() {
     console.log(res)
   }
 
+// Assuming transactions is an array of transaction objects
+const sortedTransactions = transactions.sort((a, b) => b.date.seconds - a.date.seconds);
+
+
   return (
     <ScreenTemplate>
       <ScrollView style={styles.main}>
-      {transactions.map((transaction) => (
+      {sortedTransactions.map((transaction) => (
         <View key={transaction.id} style={styles.transactionItem}>
           <Text>Date: {new Date(transaction.date.seconds * 1000).toLocaleDateString()}</Text>
           <Text>Amount: {transaction.amount}</Text>
