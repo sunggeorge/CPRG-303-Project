@@ -28,7 +28,7 @@ const firestore = getFirestore(app);
 
 
 
-const createTransaction = async (user, transaction) => {
+const createTransaction = async (user, transaction, setTransactions, setCategories) => {
   if (user) {
     const usersRef = doc(firestore, 'users', user.id);
     const transactionsRef = collection(usersRef, 'transactions');
@@ -41,6 +41,8 @@ const createTransaction = async (user, transaction) => {
     await updateDoc(categoryRef, {
       transactionID: arrayUnion(docRef.id)
     });
+    // Refresh data
+    await readTransactions(user, setTransactions, setCategories)
   }
 };
 
@@ -49,8 +51,8 @@ const readTransactions = async (user, setTransactions, setCategories ) => {
   if (user) {
 
     const usersRef = doc(firestore, 'users', user.id);
-    const transactions = [];
-    const categories = [];
+    const tempTransactions = [];
+    const tempCategories = [];
     console.log('==1==');
     const categoriesRef = collection(usersRef, 'categories');
     const transactionsRef = collection(usersRef, 'transactions');
@@ -58,7 +60,7 @@ const readTransactions = async (user, setTransactions, setCategories ) => {
     getDocs(categoriesRef).then((categorySnapshot) => {
       categorySnapshot.forEach((doc) => {
         let transactionID = doc.data().transactionID;
-        categories.push({
+        tempCategories.push({
           ...doc.data(),
            id: doc.id,
            transactions: Array.isArray(transactionID) ? transactionID.length : 0 });
@@ -68,19 +70,19 @@ const readTransactions = async (user, setTransactions, setCategories ) => {
       onSnapshot(transactionsRef, (querySnapshot) => {
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          const matchedCategory = categories.find(category => category.id === data.categoryID);
+          const matchedCategory = tempCategories.find(category => category.id === data.categoryID);
           const categoryName = matchedCategory.name ? matchedCategory.name : 'Unknown';
-          transactions.push({
+          tempTransactions.push({
             ...data,
             id: doc.id,
             categoryName: categoryName
 
           });
         });
-        console.log('transactions:', transactions);
-        console.log('categories:', categories);
-        setTransactions(transactions);
-        setCategories(categories);
+        console.log('transactions:',  tempTransactions);
+        console.log('categories:', tempCategories);
+        setTransactions( tempTransactions);
+        setCategories(tempCategories);
         console.log('Database read performed!');
 
       });

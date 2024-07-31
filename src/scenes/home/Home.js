@@ -87,7 +87,7 @@ export default function Home() {
 
   useEffect(() => {
     loadCurrentMonthTransactions(selectedDate);
-  }, [selectedDate]);
+  }, [selectedDate, transactions]);
 
   const handlePreviousMonth = () => {
     setSelectedDate(addMonths(selectedDate, -1));
@@ -147,7 +147,6 @@ export default function Home() {
   };
 
   const isCurrentMonth = isSameMonth(selectedDate, new Date());
-
 
   return (
     <ScreenTemplate>
