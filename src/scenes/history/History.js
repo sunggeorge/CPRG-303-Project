@@ -28,9 +28,10 @@ export default function History() {
     text: isDark? colors.white : colors.primaryText
   }
 
-  // ***Month selector
+  // ***Month selector & buttons
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [currentMonthTransactions, setCurrentMonthTransactions] = useState([])
+  const [sortOption, setSortOption] = useState('date')
 
 
   // useLayoutEffect(() => {
@@ -98,9 +99,22 @@ export default function History() {
      setCurrentMonthTransactions(filteredTransactions)
   }
 
+  // Add buttons
+  const sortTransactions = (transactions, option) => {
+    return [...transactions].sort((a, b) => {
+      if (option === 'amount') {
+        return b.amount - a.amount
+      } else {
+        return b.date.seconds - a.date.seconds
+      }
+    })
+  }
+
+  const sortedTransactions = sortTransactions(currentMonthTransactions, sortOption)
+
 // Assuming transactions is an array of transaction objects
 // const sortedTransactions = transactions.sort((a, b) => b.date.seconds - a.date.seconds);
-const sortedTransactions = currentMonthTransactions.sort((a, b) => b.date.seconds - a.date.seconds)
+// const sortedTransactions = currentMonthTransactions.sort((a, b) => b.date.seconds - a.date.seconds)
 
 // *****
 const isCurrentMonth = isSameMonth(selectedDate, new Date())
@@ -117,6 +131,22 @@ const isCurrentMonth = isSameMonth(selectedDate, new Date())
         <Text style={[styles.arrow, isCurrentMonth && styles.disabled]}>&#9654;</Text>
       </TouchableOpacity>
     </View>
+
+    {/* *** Add buttons */}
+    <View style={styles.sortButtonsContainer}>
+        <TouchableOpacity
+          style={styles.sortButton}
+          onPress={() => setSortOption('date')}
+        >
+          <Text style={styles.sortButtonText}>Sort by Date</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.sortButton}
+          onPress={() => setSortOption('amount')}
+        >
+          <Text style={styles.sortButtonText}>Sort by Amount</Text>
+        </TouchableOpacity>
+      </View>
       
       <ScrollView style={styles.main}>
       {sortedTransactions.map((transaction) => (
@@ -190,6 +220,21 @@ const styles = StyleSheet.create({
   },
   disabled: {
     color: '#ccc'
+  },
+  // ****
+  sortButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 10,
+  },
+  sortButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+  },
+  sortButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   }
-
 })
