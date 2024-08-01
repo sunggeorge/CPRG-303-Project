@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useLayoutEffect } from 'react'
-import { Text, View, ScrollView, StyleSheet } from 'react-native'
+import { Text, View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import IconButton from '../../components/IconButton'
 import ScreenTemplate from '../../components/ScreenTemplate'
@@ -14,7 +14,6 @@ import { getKilobyteSize } from '../../utils/functions'
 import { useAtom } from 'jotai'
 import { transactionsAtom } from '../../utils/atom'
 import { format, addMonths, isSameMonth } from 'date-fns'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 
 
 export default function History() {
@@ -100,7 +99,8 @@ export default function History() {
   }
 
 // Assuming transactions is an array of transaction objects
-const sortedTransactions = transactions.sort((a, b) => b.date.seconds - a.date.seconds);
+// const sortedTransactions = transactions.sort((a, b) => b.date.seconds - a.date.seconds);
+const sortedTransactions = currentMonthTransactions.sort((a, b) => b.date.seconds - a.date.seconds)
 
 // *****
 const isCurrentMonth = isSameMonth(selectedDate, new Date())
