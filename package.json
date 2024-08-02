@@ -35,7 +35,7 @@
     "expo-notifications": "~0.28.14",
     "expo-status-bar": "~1.12.1",
     "expo-updates": "~0.25.21",
-    "firebase": "^9.23.0",
+    "firebase": "^10.12.5",
     "global": "^4.4.0",
     "ignore-warnings": "^0.2.1",
     "jotai": "^1.7.8",
