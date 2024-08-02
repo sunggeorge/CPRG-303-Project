@@ -56,9 +56,9 @@ const readTransactions = async (user, setTransactions, setCategories) => {
   if (user) {
 
     const usersRef = doc(firestore, 'users', user.id);
-    const tempTransactions = [];
-    const tempCategories = [];
-    console.log('==1==');
+    let tempTransactions = [];
+    let tempCategories = [];
+
     const categoriesRef = collection(usersRef, 'categories');
     const transactionsRef = collection(usersRef, 'transactions');
 
@@ -71,9 +71,10 @@ const readTransactions = async (user, setTransactions, setCategories) => {
           transactions: Array.isArray(transactionID) ? transactionID.length : 0
         });
       });
-
+      console.log('==1==');
       // Fetch transactions and add categoryName field
       onSnapshot(transactionsRef, (querySnapshot) => {
+        tempTransactions = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           const matchedCategory = tempCategories.find(category => category.id === data.categoryID);

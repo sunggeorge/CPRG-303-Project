@@ -37,7 +37,7 @@ export default function AddCategory() {
   const [updatedNote, setUpdatedNote] = useState('');
 
   useEffect(() => {
-    setTitle('Manage Categories');
+    setTitle('Manage Category & Transactions');
   }, []);
 
   const handleCreateCategory = async () => {
@@ -136,9 +136,11 @@ export default function AddCategory() {
               style={styles.picker}
               onValueChange={(itemValue) => setSelectedCategory(itemValue)}
             >
-              {categories.map((category) => (
-                <Picker.Item key={category.id} label={category.name} value={category.id} />
-              ))}
+              {categories
+                .filter((category) => category.transactions === 0)
+                .map((category) => (
+                  <Picker.Item key={category.id} label={category.name} value={category.id} />
+                ))}
             </Picker>
           </View>
           <Button label="Delete Category" color={colors.secondary} onPress={handleDeleteCategory} />

@@ -26,7 +26,7 @@ export const ManageCategoryNavigator = () => {
         {(ctx) => (
           <Stack.Navigator screenOptions={navigationProps}>
             <Stack.Screen
-              name="Manage Category"
+              name="Manage Category & Transactions"
               component={ManageCategory}
               options={({ navigation }) => ({
                 headerBackground: scheme === 'dark' ? null: () => <HeaderStyle />,

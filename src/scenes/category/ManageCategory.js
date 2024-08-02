@@ -29,7 +29,7 @@ export default function ManageCategory() {
     navigation.setOptions({
       headerRight: () => (
         <IconButton
-          icon="plus"
+          icon="edit"
           color={colors.lightPurple}
           size={24}
           onPress={() => headerButtonPress()}
