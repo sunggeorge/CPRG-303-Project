@@ -1,11 +1,6 @@
-// src/utils/transactions.js
-
-// import { getFirestore } from 'firebase/firestore';
-// cloud storage
-// import { getStorage } from "firebase/storage";
-// import { useContext } from 'react'
-// import { UserDataContext } from '../context/UserDataContext'
-import { initializeApp } from 'firebase/app';
+import {
+  initializeApp
+} from 'firebase/app';
 import {
   getFirestore,
   arrayUnion,
@@ -17,7 +12,9 @@ import {
   updateDoc,
   deleteDoc
 } from 'firebase/firestore';
-import { firebaseKey } from '../config'
+import {
+  firebaseKey
+} from '../config'
 
 const firebaseConfig = {
   apiKey: firebaseKey.apiKey,
@@ -50,10 +47,9 @@ const createTransaction = async (user, transaction, setTransactions, setCategori
       transactionID: arrayUnion(docRef.id)
     });
     // Refresh data
-    await readTransactions(user, setTransactions, setCategories);
+    await readTransactions(user, setTransactions, setCategories)
   }
 };
-
 
 const readTransactions = async (user, setTransactions, setCategories) => {
   // const { userData } = useContext(UserDataContext)
@@ -86,6 +82,7 @@ const readTransactions = async (user, setTransactions, setCategories) => {
             ...data,
             id: doc.id,
             categoryName: categoryName
+
           });
         });
         console.log('transactions:', tempTransactions);
@@ -93,9 +90,12 @@ const readTransactions = async (user, setTransactions, setCategories) => {
         setTransactions(tempTransactions);
         setCategories(tempCategories);
         console.log('Database read performed!');
+
       });
 
+
     });
+
 
   }
 };
@@ -106,7 +106,7 @@ const createCategory = async (user, category, setTransactions, setCategories) =>
     const usersRef = doc(firestore, 'users', user.id);
     const categoriesRef = collection(usersRef, 'categories');
     await addDoc(categoriesRef, category);
-    await readTransactions(user, setTransactions, setCategories);
+    await readTransactions(user, setTransactions, setCategories)
   }
 };
 
@@ -130,8 +130,18 @@ const readCategories = async (user, setCategories) => {
           transactions: Array.isArray(transactionID) ? transactionID.length : 0
         });
       });
+      setCategories(categories);
     });
-    setCategories(categories);
+  }
+};
+
+// Update a Transaction
+const updateTransaction = async (user, transactionId, updatedTransaction, setTransactions) => {
+  if (user) {
+    const transactionRef = doc(firestore, `users/${user.id}/transactions/${transactionId}`);
+    await updateDoc(transactionRef, updatedTransaction);
+    // Refresh transactions data after update
+    await readTransactions(user, setTransactions, () => {});
   }
 };
 
@@ -139,8 +149,10 @@ const readCategories = async (user, setCategories) => {
 const updateCategory = async (user, categoryId, name, setTransactions, setCategories) => {
   if (user) {
     const categoryRef = doc(firestore, `users/${user.id}/categories/${categoryId}`);
-    await updateDoc(categoryRef, { name: name });
-    await readTransactions(user, setTransactions, setCategories);
+    await updateDoc(categoryRef, {
+      name: name
+    });
+    await readTransactions(user, setTransactions, setCategories)
   }
 };
 
@@ -151,17 +163,7 @@ const deleteCategory = async (user, categoryId, setTransactions, setCategories) 
     await deleteDoc(categoryRefDel);
     // await readCategories(user, setCategories);
     // await readTransactions(user, setTransactions, setCategories);
-    await readTransactions(user, setTransactions, setCategories);
-  }
-};
-
-const updateTransaction = async (user, transactionId, updatedTransaction, setTransactions, setCategories) => {
-  if (user) {
-    const transactionRef = doc(firestore, `users/${user.id}/transactions/${transactionId}`);
-    await updateDoc(transactionRef, updatedTransaction);
-
-    // Refresh data
-    await readTransactions(user, setTransactions, setCategories);
+    await readTransactions(user, setTransactions, setCategories)
   }
 };
 
@@ -170,7 +172,7 @@ export {
   readTransactions,
   createCategory,
   readCategories,
+  updateTransaction,
   updateCategory,
-  deleteCategory,
-  updateTransaction
+  deleteCategory
 };
