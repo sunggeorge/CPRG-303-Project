@@ -30,6 +30,9 @@ export default function AddCategory() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(categories[0]?.id || '');
   const [selectedTransaction, setSelectedTransaction] = useState('');
+  const [updatedCategoryName, setUpdatedCategoryName] = useState('');
+
+  // State for updating transactions
   const [updatedAmount, setUpdatedAmount] = useState('');
   const [updatedNote, setUpdatedNote] = useState('');
 
@@ -198,14 +201,13 @@ export default function AddCategory() {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    padding: 16,
-    paddingBottom: 50, // Ensure space for keyboard
-    backgroundColor: '#fff',
     flexGrow: 1,
+    justifyContent: 'center',
   },
   container: {
-    flex: 1,
-    justifyContent: 'flex-start',
+    padding: 20,
+    flexGrow: 1,
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: fontSize.large,
