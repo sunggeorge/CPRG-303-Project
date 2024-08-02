@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Text, View, StyleSheet, TextInput, Alert } from 'react-native';
+import { Text, View, StyleSheet, TextInput, Alert, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import ScreenTemplate from '../../components/ScreenTemplate';
 import Button from '../../components/Button';
@@ -30,9 +30,6 @@ export default function AddCategory() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(categories[0]?.id || '');
   const [selectedTransaction, setSelectedTransaction] = useState('');
-  const [updatedCategoryName, setUpdatedCategoryName] = useState('');
-
-  // State for updating transactions
   const [updatedAmount, setUpdatedAmount] = useState('');
   const [updatedNote, setUpdatedNote] = useState('');
 
@@ -115,93 +112,100 @@ export default function AddCategory() {
 
   return (
     <ScreenTemplate>
-      <View style={[styles.container, colorScheme.content]}>
-        {/* Create New Category */}
-        <Text style={[styles.title, { color: colorScheme.text }]}>Create New Category</Text>
-        <TextInput
-          style={[styles.input, { color: colorScheme.text }]}
-          placeholder="Enter new category name"
-          placeholderTextColor={colors.grayLight}
-          value={newCategoryName}
-          onChangeText={setNewCategoryName}
-        />
-        <Button label="Create Category" color={colors.primary} onPress={handleCreateCategory} />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={[styles.container, colorScheme.content]}>
+          {/* Create New Category */}
+          <Text style={[styles.title, { color: colorScheme.text }]}>Create New Category</Text>
+          <TextInput
+            style={[styles.input, { color: colorScheme.text }]}
+            placeholder="Enter new category name"
+            placeholderTextColor={colors.grayLight}
+            value={newCategoryName}
+            onChangeText={setNewCategoryName}
+          />
+          <Button label="Create Category" color={colors.primary} onPress={handleCreateCategory} />
 
-        {/* Delete Existing Category */}
-        <Text style={[styles.title, { color: colorScheme.text }]}>Delete Existing Category</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={selectedCategory}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-          >
-            {categories.map((category) => (
-              <Picker.Item key={category.id} label={category.name} value={category.id} />
-            ))}
-          </Picker>
+          {/* Delete Existing Category */}
+          <Text style={[styles.title, { color: colorScheme.text }]}>Delete Existing Category</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedCategory}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+            >
+              {categories.map((category) => (
+                <Picker.Item key={category.id} label={category.name} value={category.id} />
+              ))}
+            </Picker>
+          </View>
+          <Button label="Delete Category" color={colors.secondary} onPress={handleDeleteCategory} />
+
+          {/* Update Existing Transaction in Category */}
+          <Text style={[styles.title, { color: colorScheme.text }]}>Update Transaction in Category</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedCategory}
+              style={styles.picker}
+              onValueChange={(itemValue) => {
+                setSelectedCategory(itemValue);
+                setSelectedTransaction('');
+              }}
+            >
+              {categories.map((category) => (
+                <Picker.Item key={category.id} label={category.name} value={category.id} />
+              ))}
+            </Picker>
+          </View>
+
+          <Text style={[styles.title, { color: colorScheme.text }]}>Select Transaction</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedTransaction}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedTransaction(itemValue)}
+            >
+              {getTransactionsForCategory().map((transaction) => (
+                <Picker.Item
+                  key={transaction.id}
+                  label={`Amount: ${transaction.amount}, Note: ${transaction.note}`}
+                  value={transaction.id}
+                />
+              ))}
+            </Picker>
+          </View>
+
+          <TextInput
+            style={[styles.input, { color: colorScheme.text }]}
+            placeholder="Enter updated amount"
+            placeholderTextColor={colors.grayLight}
+            value={updatedAmount}
+            keyboardType="numeric"
+            onChangeText={setUpdatedAmount}
+          />
+          <TextInput
+            style={[styles.input, { color: colorScheme.text }]}
+            placeholder="Enter updated note"
+            placeholderTextColor={colors.grayLight}
+            value={updatedNote}
+            onChangeText={setUpdatedNote}
+          />
+          <Button label="Update Transaction" color={colors.tertiary} onPress={handleUpdateTransaction} />
         </View>
-        <Button label="Delete Category" color={colors.secondary} onPress={handleDeleteCategory} />
-
-        {/* Update Existing Transaction in Category */}
-        <Text style={[styles.title, { color: colorScheme.text }]}>Update Transaction in Category</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={selectedCategory}
-            style={styles.picker}
-            onValueChange={(itemValue) => {
-              setSelectedCategory(itemValue);
-              setSelectedTransaction('');
-            }}
-          >
-            {categories.map((category) => (
-              <Picker.Item key={category.id} label={category.name} value={category.id} />
-            ))}
-          </Picker>
-        </View>
-
-        <Text style={[styles.title, { color: colorScheme.text }]}>Select Transaction</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={selectedTransaction}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedTransaction(itemValue)}
-          >
-            {getTransactionsForCategory().map((transaction) => (
-              <Picker.Item
-                key={transaction.id}
-                label={`Amount: ${transaction.amount}, Note: ${transaction.note}`}
-                value={transaction.id}
-              />
-            ))}
-          </Picker>
-        </View>
-
-        <TextInput
-          style={[styles.input, { color: colorScheme.text }]}
-          placeholder="Enter updated amount"
-          placeholderTextColor={colors.grayLight}
-          value={updatedAmount}
-          keyboardType="numeric"
-          onChangeText={setUpdatedAmount}
-        />
-        <TextInput
-          style={[styles.input, { color: colorScheme.text }]}
-          placeholder="Enter updated note"
-          placeholderTextColor={colors.grayLight}
-          value={updatedNote}
-          onChangeText={setUpdatedNote}
-        />
-        <Button label="Update Transaction" color={colors.tertiary} onPress={handleUpdateTransaction} />
-      </View>
+      </ScrollView>
     </ScreenTemplate>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    flexGrow: 1,
+  scrollContainer: {
+    padding: 16,
+    paddingBottom: 50, // Ensure space for keyboard
     backgroundColor: '#fff',
+    flexGrow: 1,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
   },
   title: {
     fontSize: fontSize.large,
