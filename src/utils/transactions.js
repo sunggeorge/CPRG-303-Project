@@ -1,12 +1,20 @@
-// import { getFirestore } from 'firebase/firestore';
-// cloud storage
-// import { getStorage } from "firebase/storage";
-// import { useContext } from 'react'
-// import { UserDataContext } from '../context/UserDataContext'
-import { initializeApp } from 'firebase/app';
-import { getFirestore, arrayUnion, collection, doc, addDoc, getDocs, onSnapshot, updateDoc, deleteDoc } from 'firebase/firestore';
-import { firebaseKey } from '../config'
-
+import {
+  initializeApp
+} from 'firebase/app';
+import {
+  getFirestore,
+  arrayUnion,
+  collection,
+  doc,
+  addDoc,
+  getDocs,
+  onSnapshot,
+  updateDoc,
+  deleteDoc
+} from 'firebase/firestore';
+import {
+  firebaseKey
+} from '../config'
 
 const firebaseConfig = {
   apiKey: firebaseKey.apiKey,
@@ -18,15 +26,12 @@ const firebaseConfig = {
   measurementId: firebaseKey.measurementId
 };
 
-
 // const auth = initializeAuth(app, {
 //   persistence: getReactNativePersistence(AsyncStorage),
 // });
 // const auth = initializeAuth(app,);
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
-
-
 
 const createTransaction = async (user, transaction, setTransactions, setCategories) => {
   if (user) {
@@ -46,14 +51,14 @@ const createTransaction = async (user, transaction, setTransactions, setCategori
   }
 };
 
-const readTransactions = async (user, setTransactions, setCategories ) => {
+const readTransactions = async (user, setTransactions, setCategories) => {
   // const { userData } = useContext(UserDataContext)
   if (user) {
 
     const usersRef = doc(firestore, 'users', user.id);
-    const tempTransactions = [];
-    const tempCategories = [];
-    console.log('==1==');
+    let tempTransactions = [];
+    let tempCategories = [];
+
     const categoriesRef = collection(usersRef, 'categories');
     const transactionsRef = collection(usersRef, 'transactions');
 
@@ -62,12 +67,14 @@ const readTransactions = async (user, setTransactions, setCategories ) => {
         let transactionID = doc.data().transactionID;
         tempCategories.push({
           ...doc.data(),
-           id: doc.id,
-           transactions: Array.isArray(transactionID) ? transactionID.length : 0 });
+          id: doc.id,
+          transactions: Array.isArray(transactionID) ? transactionID.length : 0
+        });
       });
-
+      console.log('==1==');
       // Fetch transactions and add categoryName field
       onSnapshot(transactionsRef, (querySnapshot) => {
+        tempTransactions = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           const matchedCategory = tempCategories.find(category => category.id === data.categoryID);
@@ -79,17 +86,16 @@ const readTransactions = async (user, setTransactions, setCategories ) => {
 
           });
         });
-        console.log('transactions:',  tempTransactions);
+        console.log('transactions:', tempTransactions);
         console.log('categories:', tempCategories);
-        setTransactions( tempTransactions);
+        setTransactions(tempTransactions);
         setCategories(tempCategories);
         console.log('Database read performed!');
 
       });
 
 
-        }
-      );
+    });
 
 
   }
@@ -121,12 +127,22 @@ const readCategories = async (user, setCategories) => {
         console.log('transactionID:', transactionID);
         categories.push({
           ...doc.data(),
-           id: doc.id,
-           transactions: Array.isArray(transactionID) ? transactionID.length : 0 });
+          id: doc.id,
+          transactions: Array.isArray(transactionID) ? transactionID.length : 0
+        });
       });
-        }
-      );
-        setCategories(categories);
+      setCategories(categories);
+    });
+  }
+};
+
+// Update a Transaction
+const updateTransaction = async (user, transactionId, updatedTransaction, setTransactions) => {
+  if (user) {
+    const transactionRef = doc(firestore, `users/${user.id}/transactions/${transactionId}`);
+    await updateDoc(transactionRef, updatedTransaction);
+    // Refresh transactions data after update
+    await readTransactions(user, setTransactions, () => {});
   }
 };
 
@@ -134,7 +150,9 @@ const readCategories = async (user, setCategories) => {
 const updateCategory = async (user, categoryId, name, setTransactions, setCategories) => {
   if (user) {
     const categoryRef = doc(firestore, `users/${user.id}/categories/${categoryId}`);
-    await updateDoc(categoryRef, { name: name });
+    await updateDoc(categoryRef, {
+      name: name
+    });
     await readTransactions(user, setTransactions, setCategories)
   }
 };
@@ -150,4 +168,12 @@ const deleteCategory = async (user, categoryId, setTransactions, setCategories) 
   }
 };
 
-export { createTransaction, readTransactions, createCategory, readCategories, updateCategory, deleteCategory };
+export {
+  createTransaction,
+  readTransactions,
+  createCategory,
+  readCategories,
+  updateTransaction,
+  updateCategory,
+  deleteCategory
+};

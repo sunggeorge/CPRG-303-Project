@@ -1,179 +1,228 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { UserDataContext } from '../../context/UserDataContext'
-import { Text, View, StyleSheet, TextInput, TouchableOpacity  } from 'react-native'
-import {Picker} from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import ScreenTemplate from '../../components/ScreenTemplate'
-import Button from '../../components/Button'
-import { useRoute, useFocusEffect, useNavigation } from '@react-navigation/native'
-import { colors, fontSize } from 'theme'
-import { ColorSchemeContext } from '../../context/ColorSchemeContext'
-import { HomeTitleContext } from '../../context/HomeTitleContext'
-import {useAtom} from 'jotai'
+import React, { useState, useEffect, useContext } from 'react';
+import { Text, View, StyleSheet, TextInput, Alert, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import ScreenTemplate from '../../components/ScreenTemplate';
+import Button from '../../components/Button';
+import { useNavigation } from '@react-navigation/native';
+import { colors, fontSize } from 'theme';
+import { ColorSchemeContext } from '../../context/ColorSchemeContext';
+import { HomeTitleContext } from '../../context/HomeTitleContext';
+import { useAtom } from 'jotai';
 import { categoriesAtom, transactionsAtom } from '../../utils/atom';
-import { createTransaction } from '../../utils/transactions'
-import { firestore } from '../../firebase/config';
-import { readTransactions, createCategory, updateCategory, deleteCategory } from '../../utils/transactions';
-// import { storage } from '../../utils/Storage'
-// import moment from 'moment'
+import { createCategory, updateTransaction, deleteCategory } from '../../utils/transactions';
+import { UserDataContext } from '../../context/UserDataContext';
 
 export default function AddCategory() {
-  const route = useRoute()
-  const [, setCategories] = useAtom(categoriesAtom)
-  const [, setTransactions] = useAtom(transactionsAtom)
-  // const { data, from } = route.params
-  const { scheme } = useContext(ColorSchemeContext)
-  // const [date, setDate] = useState('')
-  const { setTitle } = useContext(HomeTitleContext)
-  const { userData } = useContext(UserDataContext)
-  const navigation = useNavigation()
-  const [categories] = useAtom(categoriesAtom)
-  const isDark = scheme === 'dark'
+  const navigation = useNavigation();
+  const { scheme } = useContext(ColorSchemeContext);
+  const { setTitle } = useContext(HomeTitleContext);
+  const { userData } = useContext(UserDataContext);
+  const [categories, setCategories] = useAtom(categoriesAtom);
+  const [transactions, setTransactions] = useAtom(transactionsAtom);
+
+  const isDark = scheme === 'dark';
   const colorScheme = {
-    content: isDark? styles.darkContent:styles.lightContent,
-    text: isDark? colors.white : colors.primaryText
-  }
+    content: isDark ? styles.darkContent : styles.lightContent,
+    text: isDark ? colors.white : colors.primaryText,
+  };
+
+  // State for managing category actions
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(categories[0]?.id || '');
+  const [selectedTransaction, setSelectedTransaction] = useState('');
+  const [updatedCategoryName, setUpdatedCategoryName] = useState('');
+
+  // State for updating transactions
+  const [updatedAmount, setUpdatedAmount] = useState('');
+  const [updatedNote, setUpdatedNote] = useState('');
 
   useEffect(() => {
-    console.log('Add transaction screen')
-    // loadStorage()
-  }, [])
+    setTitle('Manage Category & Transactions');
+  }, []);
 
-  useFocusEffect(() => {
-    // setTitle(data.fullName)
-    setTitle('Add Category')
-  });
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) {
+      Alert.alert('Error', 'Please enter a valid category name.');
+      return;
+    }
 
-  const [categoryID, setCategoryID] = useState(categories[0].id);
-  const [date, setDate] = useState(new Date());
-  const [type, setType] = useState('expenses');
-  const [amount, setAmount] = useState(0);
-  const [note, setNote] = useState('');
-  const [show, setShow] = useState(false);
+    const newCategory = {
+      name: newCategoryName,
+      transactionID: [],
+    };
 
-  const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(false); // Hide the picker after selecting a date
-    setDate(currentDate);
+    try {
+      await createCategory(userData, newCategory, setTransactions, setCategories);
+      setNewCategoryName('');
+      Alert.alert('Success', 'Category created successfully.');
+    } catch (error) {
+      console.error('Error creating category:', error);
+      Alert.alert('Error', 'Failed to create category.');
+    }
   };
 
-  const handleSubmit = async () => {
-    // if (userData && amount > 0) {
-    //   const transaction = {
-    //     categoryID: categoryID,
-    //     date: date,
-    //     amount: type == 'expenses'? -1 * parseFloat(amount): parseFloat(amount),
-    //     note: note
-    //   };
-    //   await createTransaction(userData, transaction);
-    //   navigation.goBack();
-    // }
-    await testFunctions()
+  const handleDeleteCategory = async () => {
+    if (!selectedCategory) {
+      Alert.alert('Error', 'Please select a category to delete.');
+      return;
+    }
+
+    try {
+      await deleteCategory(userData, selectedCategory, setTransactions, setCategories);
+      setSelectedCategory('');
+      Alert.alert('Success', 'Category deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      Alert.alert('Error', 'Failed to delete category.');
+    }
   };
 
-  const testFunctions = async () => {
-    // let tempCategory = {
-    //   name: 'test',
-    //   transactionID: []
-    // }
-    // console.log('userData(new):', userData)
-    // createCategory(userData, tempCategory, setTransactions, setCategories)
+  const handleUpdateTransaction = async () => {
+    if (!selectedCategory) {
+      Alert.alert('Error', 'Please select a category to update.');
+      return;
+    }
 
-    // await deleteCategory(userData, 'JXSULBdIAKWYaJAfJYmA', setTransactions, setCategories)
-    // await updateCategory(userData, 'JXSULBdIAKWYaJAfJYmA', 'newTest9', setTransactions, setCategories)
+    if (!selectedTransaction) {
+      Alert.alert('Error', 'Please select a transaction to update.');
+      return;
+    }
 
-  }
+    if (!updatedAmount.trim() || isNaN(updatedAmount)) {
+      Alert.alert('Error', 'Please enter a valid amount.');
+      return;
+    }
 
+    try {
+      const updatedTransaction = {
+        amount: parseFloat(updatedAmount),
+        note: updatedNote,
+      };
 
-  console.log('categories:', categories)
-  console.log('categoryID:', categoryID)
+      await updateTransaction(userData, selectedTransaction, updatedTransaction, setTransactions);
+      setUpdatedAmount('');
+      setUpdatedNote('');
+      Alert.alert('Success', 'Transaction updated successfully.');
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      Alert.alert('Error', 'Failed to update transaction.');
+    }
+  };
+
+  const getTransactionsForCategory = () => {
+    return transactions.filter((transaction) => transaction.categoryID === selectedCategory);
+  };
 
   return (
     <ScreenTemplate>
-      <View style={[styles.container, colorScheme.content]}>
-        <Text style={[styles.field, {color: colorScheme.text}]}>Add New Transaction</Text>
-
-        <Text style={[styles.field, {color: colorScheme.text}]}>Category</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={categoryID}
-            style={styles.picker}
-            onValueChange={(itemValue) => setCategoryID(itemValue)}
-          >
-            {categories.map((category) => (
-              <Picker.Item key={category.id} label={category.name} value={category.id} />
-            ))}
-          </Picker>
-        </View>
-
-        <Text style={[styles.field, { color: colorScheme.text }]}>Date</Text>
-        <TouchableOpacity onPress={() => setShow(true)} style={styles.dateButton}>
-          <Text style={styles.dateText}>{date.toDateString()}</Text>
-        </TouchableOpacity>
-        {show && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={handleDateChange}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={[styles.container, colorScheme.content]}>
+          {/* Create New Category */}
+          <Text style={[styles.title, { color: colorScheme.text }]}>Create New Category</Text>
+          <TextInput
+            style={[styles.input, { color: colorScheme.text }]}
+            placeholder="Enter new category name"
+            placeholderTextColor={colors.grayLight}
+            value={newCategoryName}
+            onChangeText={setNewCategoryName}
           />
-        )}
+          <Button label="Create Category" color={colors.primary} onPress={handleCreateCategory} />
 
-        <Text style={[styles.field, {color: colorScheme.text}]}>Type</Text>
-        <View style={styles.radioContainer}>
-          <TouchableOpacity style={styles.radioOption} onPress={() => setType('expenses')}>
-            <View style={[styles.radioButton, type === 'expenses' && styles.radioButtonSelected]} />
-            <Text style={[styles.radioLabel, {color: colorScheme.text}]}>Expenses</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.radioOption} onPress={() => setType('credit')}>
-            <View style={[styles.radioButton, type === 'credit' && styles.radioButtonSelected]} />
-            <Text style={[styles.radioLabel, {color: colorScheme.text}]}>Credit</Text>
-          </TouchableOpacity>
-        </View>
+          {/* Delete Existing Category */}
+          <Text style={[styles.title, { color: colorScheme.text }]}>Delete Existing Category</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedCategory}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+            >
+              {categories
+                .filter((category) => category.transactions === 0)
+                .map((category) => (
+                  <Picker.Item key={category.id} label={category.name} value={category.id} />
+                ))}
+            </Picker>
+          </View>
+          <Button label="Delete Category" color={colors.secondary} onPress={handleDeleteCategory} />
 
-        <Text style={[styles.field, {color: colorScheme.text}]}>Amount</Text>
-        <TextInput
-          style={[styles.input, {color: colorScheme.text, borderColor: colorScheme.border}]}
-          keyboardType="numeric"
-          placeholder="Enter amount"
-          value={amount}
-          onChangeText={(text) => setAmount(text)}
-        />
+          {/* Update Existing Transaction in Category */}
+          <Text style={[styles.title, { color: colorScheme.text }]}>Update Transaction in Category</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedCategory}
+              style={styles.picker}
+              onValueChange={(itemValue) => {
+                setSelectedCategory(itemValue);
+                setSelectedTransaction('');
+              }}
+            >
+              {categories.map((category) => (
+                <Picker.Item key={category.id} label={category.name} value={category.id} />
+              ))}
+            </Picker>
+          </View>
 
-        <Text style={[styles.field, {color: colorScheme.text}]}>Note</Text>
-        <TextInput
-          style={[styles.input, {color: colorScheme.text, borderColor: colorScheme.border}]}
-          placeholder="Enter note"
-          value={note}
-          onChangeText={(text) => setNote(text)}
-        />
+          <Text style={[styles.title, { color: colorScheme.text }]}>Select Transaction</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedTransaction}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedTransaction(itemValue)}
+            >
+              {getTransactionsForCategory().map((transaction) => (
+                <Picker.Item
+                  key={transaction.id}
+                  label={`Amount: ${transaction.amount}, Note: ${transaction.note}`}
+                  value={transaction.id}
+                />
+              ))}
+            </Picker>
+          </View>
 
-        <View style={{ width: '100%' }}>
-          <Button
-            label="Submit"
-            color={colors.primary}
-            onPress={handleSubmit}
+          <TextInput
+            style={[styles.input, { color: colorScheme.text }]}
+            placeholder="Enter updated amount"
+            placeholderTextColor={colors.grayLight}
+            value={updatedAmount}
+            keyboardType="numeric"
+            onChangeText={setUpdatedAmount}
           />
-          <Button
-            label="Cancel"
-            color={colors.secondary}
-            onPress={() => navigation.goBack()}
+          <TextInput
+            style={[styles.input, { color: colorScheme.text }]}
+            placeholder="Enter updated note"
+            placeholderTextColor={colors.grayLight}
+            value={updatedNote}
+            onChangeText={setUpdatedNote}
           />
+          <Button label="Update Transaction" color={colors.tertiary} onPress={handleUpdateTransaction} />
         </View>
-      </View>
+      </ScrollView>
     </ScreenTemplate>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   container: {
     padding: 20,
     flexGrow: 1,
     backgroundColor: '#fff',
   },
-  field: {
+  title: {
+    fontSize: fontSize.large,
     marginBottom: 10,
-    fontSize: 16,
+    marginTop: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+    backgroundColor: '#f7f7f7',
   },
   pickerContainer: {
     borderWidth: 1,
@@ -185,39 +234,10 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
   },
-  radioContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
+  darkContent: {
+    backgroundColor: colors.darkInput,
   },
-  radioOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 20,
-  },
-  radioButton: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#000',
-    marginRight: 10,
-  },
-  radioButtonSelected: {
-    backgroundColor: '#000',
-  },
-  radioLabel: {
-    fontSize: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  lightContent: {
+    backgroundColor: colors.white,
   },
 });

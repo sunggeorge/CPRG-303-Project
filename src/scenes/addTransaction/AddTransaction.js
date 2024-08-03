@@ -9,9 +9,11 @@ import { useRoute, useFocusEffect, useNavigation } from '@react-navigation/nativ
 import { colors, fontSize } from 'theme'
 import { ColorSchemeContext } from '../../context/ColorSchemeContext'
 import { HomeTitleContext } from '../../context/HomeTitleContext'
+import { showToast } from '../../utils/ShowToast'
 import {useAtom} from 'jotai'
 import { categoriesAtom, transactionsAtom } from '../../utils/atom';
 import { createTransaction } from '../../utils/transactions'
+
 // import { storage } from '../../utils/Storage'
 // import moment from 'moment'
 
@@ -29,6 +31,14 @@ export default function AddTransaction() {
   const colorScheme = {
     content: isDark? styles.darkContent:styles.lightContent,
     text: isDark? colors.white : colors.primaryText
+  }
+
+  const onShowToastPress = (inputMsg) => {
+    showToast({
+      title: 'Invalid Value',
+      body: '🚫 ' + inputMsg ,
+      isDark
+    })
   }
 
   useEffect(() => {
@@ -54,16 +64,27 @@ export default function AddTransaction() {
     setDate(currentDate);
   };
 
+  function strictParseFloat(value) {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) || !/^\d+(\.\d+)?$/.test(value) ? NaN : parsed;
+  }
+
   const handleSubmit = async () => {
-    if (userData && amount > 0) {
-      const transaction = {
-        categoryID: categoryID,
-        date: date,
-        amount: type == 'expenses'? -1 * parseFloat(amount): parseFloat(amount),
-        note: note
-      };
-      await createTransaction(userData, transaction, setTransactions, setCategories);
-      navigation.goBack();
+    if (userData) {
+      let parsedAmount = strictParseFloat(amount)
+      console.log('amount: ', amount, typeof amount)
+      if (Number.isFinite(parsedAmount) && parsedAmount > 0) {
+        const transaction = {
+          categoryID: categoryID,
+          date: date,
+          amount: type == 'expenses'? -1 * parsedAmount: parsedAmount,
+          note: note
+        };
+        await createTransaction(userData, transaction, setTransactions, setCategories);
+        navigation.goBack();
+      } else {
+        onShowToastPress('Amount must be positive number!')
+      }
     }
   };
 
