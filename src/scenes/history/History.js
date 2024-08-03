@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useContext, useLayoutEffect } from 'react'
-import { Text, View, ScrollView, StyleSheet } from 'react-native'
+import { Text, View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import IconButton from '../../components/IconButton'
 import ScreenTemplate from '../../components/ScreenTemplate'
 import Button from '../../components/Button'
 import { firestore } from '../../firebase/config'
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, Timestamp } from 'firebase/firestore';
 import { colors, fontSize } from '../../theme'
 import { UserDataContext } from '../../context/UserDataContext'
 import { ColorSchemeContext } from '../../context/ColorSchemeContext'
@@ -13,6 +13,7 @@ import { sendNotification } from '../../utils/SendNotification'
 import { getKilobyteSize } from '../../utils/functions'
 import { useAtom } from 'jotai'
 import { transactionsAtom } from '../../utils/atom'
+import { format, addMonths, isSameMonth } from 'date-fns'
 
 
 export default function History() {
@@ -27,6 +28,10 @@ export default function History() {
     text: isDark? colors.white : colors.primaryText
   }
 
+  // ***Month selector & buttons
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [currentMonthTransactions, setCurrentMonthTransactions] = useState([])
+  const [sortOption, setSortOption] = useState('date')
 
 
   // useLayoutEffect(() => {
@@ -70,12 +75,79 @@ export default function History() {
     console.log(res)
   }
 
-// Assuming transactions is an array of transaction objects
-const sortedTransactions = transactions.sort((a, b) => b.date.seconds - a.date.seconds);
+  // ***Month selector
+  useEffect(() => {
+    loadCurrentMonthTransactions(selectedDate)
+  }, [selectedDate, transactions])
 
+  const handlePreviousMonth = () => {
+    setSelectedDate(addMonths(selectedDate, -1))
+  }
+
+  const handleNextMonth = () => {
+    setSelectedDate(addMonths(selectedDate, 1))
+  }
+
+  const convertFirestoreTimestampToDate = (timestamp) => {
+    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000)
+  } 
+
+  const loadCurrentMonthTransactions = (date) => {
+    const filteredTransactions = transactions.filter(transaction =>
+      isSameMonth(convertFirestoreTimestampToDate(transaction.date), date)
+     )
+     setCurrentMonthTransactions(filteredTransactions)
+  }
+
+  // Add buttons
+  const sortTransactions = (transactions, option) => {
+    return [...transactions].sort((a, b) => {
+      if (option === 'amount') {
+        return b.amount - a.amount
+      } else {
+        return b.date.seconds - a.date.seconds
+      }
+    })
+  }
+
+  const sortedTransactions = sortTransactions(currentMonthTransactions, sortOption)
+
+// Assuming transactions is an array of transaction objects
+// const sortedTransactions = transactions.sort((a, b) => b.date.seconds - a.date.seconds);
+// const sortedTransactions = currentMonthTransactions.sort((a, b) => b.date.seconds - a.date.seconds)
+
+// *****
+const isCurrentMonth = isSameMonth(selectedDate, new Date())
 
   return (
     <ScreenTemplate>
+      {/* *** */}
+      <View style={styles.monthSelector}>
+      <TouchableOpacity onPress={handlePreviousMonth}>
+        <Text style={styles.arrow}>&#9664;</Text>
+      </TouchableOpacity>
+      <Text style={styles.month}>{format(selectedDate, 'MMMM, yyyy')}</Text>
+      <TouchableOpacity onPress={handleNextMonth} disabled={isCurrentMonth}>
+        <Text style={[styles.arrow, isCurrentMonth && styles.disabled]}>&#9654;</Text>
+      </TouchableOpacity>
+    </View>
+
+    {/* *** Add buttons */}
+    <View style={styles.sortButtonsContainer}>
+        <TouchableOpacity
+          style={styles.sortButton}
+          onPress={() => setSortOption('date')}
+        >
+          <Text style={styles.sortButtonText}>Sort by Date</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.sortButton}
+          onPress={() => setSortOption('amount')}
+        >
+          <Text style={styles.sortButtonText}>Sort by Amount</Text>
+        </TouchableOpacity>
+      </View>
+      
       <ScrollView style={styles.main}>
       {sortedTransactions.map((transaction) => (
         <View key={transaction.id} style={styles.transactionItem}>
@@ -127,5 +199,42 @@ const styles = StyleSheet.create({
     borderColor: colors.lightPurple,
     borderRadius: 5,
     marginBottom: 10,
+  },
+  // ***
+  monthSelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    marginBottom: 10
+  },
+  arrow: {
+    fontSize: 20,
+    color: colors.primary
+  },
+  month: {
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
+  disabled: {
+    color: '#ccc'
+  },
+  // ****
+  sortButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 10,
+  },
+  sortButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+  },
+  sortButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   }
 })
