@@ -63,7 +63,7 @@ cd [project folder name]
 yarn install
 ```
 
-### 2. Install Copy the API Key**
+### 2. Install Copy the API Key
 
 copy `config.js` submitted into **src** folder
 
