@@ -1,10 +1,12 @@
 # F5 Expenses Tracker
+CPRG-303-C Mobile Application Development  (Spring 2024)
+Phase 4: Building the App
 
 
 ## Requirements
 
 - Node 18
-- Yarn 1.22.x
+- Yarn
 - eas-cli
 - Expo Account
 
@@ -33,462 +35,58 @@
 
 ## Features
 
-- BottomTab, TopTab, Modal and Stack navigation
 - Registration with E-mail & Password
 - Login with E-mail and Password
-- Change password
-- Deleting an account
 - Handling persisted login credentials
-- Writing to Firestore Database
-- Reading from Firestore Database
-- Uploading images to Cloud Storage
-- Update user profile
-- Dynamic switching of dark themes by device appearance
-- Dynamic header title
-- Retrieving Expo push tokens and saving them to Firestore
+- Saving expenses transactions and categories to Firestore Database
+- Reading expenses transactions and categories from Firestore Database
+- Monthly Expense analysis: Percentage by categories
 - State management by Jotai
 
-## Difference from v1
+![image](https://github.com/user-attachments/assets/2da3812f-617e-41e7-a63f-6f63d236e3d0)
+![image](https://github.com/user-attachments/assets/6b880ca6-3211-4ede-a757-15ae6a0f1d49)
+![image](https://github.com/user-attachments/assets/18d79c2f-fa20-4338-9775-0b8117a7b28b)
+![image](https://github.com/user-attachments/assets/7ea71048-e991-45e8-829b-c0000e7fbf30)
+![image](https://github.com/user-attachments/assets/4a82ffd4-4519-4482-9bdd-98c9805a0cad)
+![image](https://github.com/user-attachments/assets/9089493b-74f6-4240-872f-d3a506f5c619)
 
-[reactnative-expo-firebase-boilerplate v1](https://github.com/kiyohken2000/reactnative-expo-firebase-boilerplate)
 
-- use Context API
-- Adjustment style file
-
-## How to use
+## How to run in expo emulator
 
 
 ### 1. Install
 
-Download zip or click "Use this template"
-
-or
 
 ```
-git clone https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2.git
-cd ReactNative-Expo-Firebase-Boilerplate-v2
+git clone https://github.com/sunggeorge/CPRG-303-Project [project folder name]
+cd [project folder name]
 yarn install
 ```
 
-### 2. Setting up Firebase
+### 2. Install Copy the API Key**
 
-**Step 1: Create a Google Firebase Account**
-
-- Go to [https://console.firebase.google.com/](https://console.firebase.google.com/)
-- Sign up an account and create a new project
-- Put in your project name, click "Continue".
-- Google Analytics can be enabled or disabled.
-- Click "Create Project" it is going to take a while before it says "Your new project is ready", click "Continue."
-
-**Step 2: Configure Firebase Console Sign-In Methods**
-
-- On "Project Overview", click the "Authentication" on the left sidebar.
-- Click on the second tab where it said "Sign-In method"
-- Enable all the Sign-in method you would like to enable. For now, we will enable the "Email/Password" option.
+copy `config.js` submitted into **src** folder
 
 
-
-**Step 3: Configure Firebase Console Firestore**
-
-- We will then click the "Cloud Firestore" on the left to create a database.
-- Select the "Start in test mode" option, click "next."
-- Select the "Cloud Firestore location", click "Enable"
-- Create the "users" and "tokens" collections. An empty document is fine.
-
-
-
-***Security Rules***
-
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isLogin() {
-      return request.auth.uid != null;
-    }
-    match /{document=**} {
-      allow read, write: if isLogin();
-    }
-  }
-}
-```
-
-
-***Security Rules***
-
-```
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-```
-
-**Step 5: Copy the API Key**
-
-- On the Project Overview, click on the "Web" icon since we are building on Expo.
-- Then give it a name, click "Register app".
-- It will show you the Firebase configuration, copy the SDK keys, we will use it in the next step.
-
-
-**Step 6: Connect Firebase**
-
-- Write the copied API Key in your app.
-
-`src\config.js`
-
-```javascript
-const firebaseKey = {
-  apiKey: "Your API Key",
-  authDomain: "Your API Key",
-  projectId: "Your API Key",
-  storageBucket: "Your API Key",
-  messagingSenderId: "Your API Key",
-  appId: "Your API Key",
-  measurementId: "Your API Key"
-};
-```
-
-### 3. Update app.json and app config
-
-Replace the name and Slug with yours.
-
-```
-"name": "your-app-name",
-"slug": "your-app-slug",
-```
-
-Remove `expo.updates.url`
-
-```
-"updates": {
-  "enabled": true,
-  "fallbackToCacheTimeout": 10000,
-  "url": "https://u.expo.dev/1650611b-a5b8-4420-9656-60c06429edd4"
-},
-```
-
-Remove `expo.extra` and `expo.runtimeVersion`
-
-```
-"extra": {
-  "eas": {
-    "projectId": "1650611b-a5b8-4420-9656-60c06429edd4"
-  }
-},
-"runtimeVersion": {
-  "policy": "appVersion"
-}
-```
-
-`src\config.js`
-
-```javascript
-const defaultAvatar = 'Your default icon URL'
-const expoProjectId = 'Your project id'
-```
-
-If you do not have an Expo Project ID, run this command.
-
-```
-eas build:configure
-```
-
-Then check the `expo.extra.projectId` in app.json.
-
-### 4. Run Your App
+### 3. Run Your App
 
 ```
 yarn start
 ```
 
-## How to use utils
+### 4. Launch emulator 
 
-- ### Reload app
+press **a** for Android Emulator
+press **r** for reloading app
 
-```javascript
-import { Restart } from '../../utils/Restart'
+### 5. Log in testing account 
 
-const ourFunc = async() => {
-  await Restart()
-}
-```
+**account name**: test@test.com
+**password**: testtest
 
-- ### Storage
+![image](https://github.com/user-attachments/assets/94cfa2b3-1a3c-4d77-8f0b-f02becb66efb)
 
-```javascript
-import { storage } from '../../utils/Storage'
-
-const saveStorage = async() => {
-  const today = moment().toString()
-  await storage.save({
-    key: 'date',
-    data: {
-      'date': today
-    }
-  })
-}
-
-const loadStorage = async() => {
-  try {
-    const result = await storage.load({key: 'date'})
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-const removeStorage = async() => {
-  await storage.remove({ key: 'date' })
-}
-```
-
-- ### Toast & Notification
-
-
-```javascript
-// Toast
-import { showToast } from '../../utils/ShowToast'
-
-const onShowToastPress = () => {
-  showToast({
-    title: 'Hello',
-    body: 'This is some something 👋',
-    isDark // true or false
-  })
-}
-
-// Send Notification
-import { sendNotification } from '../../utils/SendNotification'
-
-const onNotificationPress = async() => {
-  const res = await sendNotification({
-    title: 'Hello',
-    body: 'This is some something 👋',
-    data: 'something data',
-    token: token.token //e.g. ExponentPushToken[WGSdXiJ5rLHAK53DRPq2x-]
-  })
-  console.log(res)
-}
-```
-
-- ### Snackbar
-
-
-```javascript
-import React, { useState } from 'react'
-import { View, StyleSheet } from 'react-native'
-import ScreenTemplate from '../../components/ScreenTemplate'
-import Button from '../../components/Button'
-import ShowSnackbar from '../../components/ShowSnackbar' // import snackbar component
-
-export default function Follower() {
-  const [visible, setVisible] = useState(false) // create snackbar state
-
-  const onDismissSnackBar = () => setVisible(false) // create hide snackbar function
-
-  const onShowSnackbarPress = () => { // create show snackbar function
-    setVisible(true)
-  }
-
-  return (
-    <>
-    <ScreenTemplate>
-      <View style={styles.container}>
-        <View style={{width:'100%'}}>
-          <Button
-            label='Show Snackbar'
-            color={colors.purple}
-            onPress={onShowSnackbarPress}
-          />
-        </View>
-      </View>
-    </ScreenTemplate>
-    {/* Pass props to snackbar component */}
-    <ShowSnackbar
-      visible={visible}
-      onDismissSnackBar={onDismissSnackBar}
-      title='Hello 👋'
-      duration={3000}
-    />
-    </>
-  )
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-})
-```
-
-- ### Data fetch, Loading, Error
-
-
-```javascript
-export default function Print() {
-  const [data, setData] = useState([])
-  const [isLoading, setIsLoading] = useState(false) // Create loading flag
-  const [isError, setIsError] = useState(false) // Create error flag
-
-  const fetchData = async() => {
-    try {
-      setIsLoading(true) // Set flag
-      const { data } = await axios.get('https://jsonplaceholder.typicode.com/posts')
-      setData(data)
-    } catch(e) {
-      console.log('error', e)
-      setIsError(true) // Set flag
-    } finally {
-      setIsLoading(false) // Set flag
-    }
-  }
-
-  return (
-    <ScreenTemplate isLoading={isLoading} isError={isError}> {/* Pass flag to ScreenTemplate component */}
-      <ScrollView style={styles.main}>
-        {data.map((item, i) => {
-          return (
-            <RenderItem item={item} key={i} index={i} />
-          )
-        })}
-      </ScrollView>
-    </ScreenTemplate>
-  )
-}
-```
-
-## NOTES
-
-- ### getExpoPushTokenAsync()
-
-The experienceId is required to get the push token using getExpoPushTokenAsync in the EAS build.
-
-```javascript
-const token = await Notifications.getExpoPushTokenAsync({
-  projectId: 'your project id'
-});
-```
-
-- ### .easignore
-
-If you want to use environment variables in EAS build, create .easignore.
-
-[How projects are uploaded to EAS Build](https://github.com/expo/fyi/blob/main/eas-build-archive.md)
-
-## Migrate to development build
-
-- [Official Document](https://docs.expo.dev/development/getting-started/)
-
-If you want to use libraries that contain native code, you must use the development build.
-
-### Requirements
-
-- expo account
-- eas-cli
-
-### 1. Install `expo-dev-client`
-
-```
-npx expo install expo-dev-client
-```
-
-### 2. Create `eas.json` and update `eas.json`
-
-```
-eas update:configure
-```
-
-```
-eas build:configure
-```
-
-*example*
-
- `eas.json`
-
-```
-{
-  "cli": {
-    "version": ">= 3.15.0"
-  },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "channel": "development",
-      "ios": {
-        "simulator": false
-      }
-    },
-    "preview": {
-      "distribution": "internal",
-      "channel": "internal"
-    },
-    "production": {
-      "channel": "production"
-    }
-  },
-  "submit": {
-    "production": {}
-  }
-}
-```
-
-### 3. Register iPhone in Ad Hoc and install profile on iPhone
-
-```
-eas device:create
-```
-
-### 4. Build your App and Install your App on your device
-
-```
-eas build --profile development --platform ios
-eas build --profile development --platform android
-```
-
-### 5. Run
-
-```
-yarn start
-```
-
-Scan the QR code above with Expo Go (Android) or the Camera app (iOS)
-
-### Commands
-
-```
-// build: develop
-eas build --profile development --platform ios
-eas build --profile development --platform android
-
-// build: internal
-eas build --profile preview --platform ios
-eas build --profile preview --platform android
-
-// build: production
-eas build --profile production --platform ios
-eas build --profile production --platform android
-
-// OTA update
-eas update --channel internal --message "Updating the app"
-eas update --channel production --message "Updating the app"
-
-// iOS: Setting up ad hoc provisioning
-eas device:create
-// list all registered devices for your account
-eas device:list
-
-// Expo Settings
-eas build:configure
-eas update:configure
-```
 
 ## Licence
 
-This project is available under the MIT license. See the [LICENSE](https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2/blob/master/LICENSE) file for more info.
+This project is available under the MIT license. And it's built based on the expo-firebase template: [https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2](https://github.com/kiyohken2000/ReactNative-Expo-Firebase-Boilerplate-v2)
